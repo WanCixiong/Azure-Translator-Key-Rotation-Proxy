@@ -45,6 +45,10 @@ Invoke-RestMethod -Method Post -Uri $uri -ContentType 'application/json' -Body '
 # 如设置了 PROXY_TOKEN，需要带头或查询参数：
 $Headers = @{ 'x-proxy-token' = $Env:PROXY_TOKEN }
 Invoke-RestMethod -Method Post -Uri $uri -Headers $Headers -ContentType 'application/json' -Body '[{"Text":"Hello world"}]'
+
+# 兼容只能设置 Azure 头名的客户端：
+$Headers = @{ 'Ocp-Apim-Subscription-Key' = $Env:PROXY_TOKEN }
+Invoke-RestMethod -Method Post -Uri $uri -Headers $Headers -ContentType 'application/json' -Body '[{"Text":"Hello world"}]'
 ```
 
 ## 在 Render 部署
@@ -60,7 +64,9 @@ Invoke-RestMethod -Method Post -Uri $uri -Headers $Headers -ContentType 'applica
 
 ## 与沉浸式翻译集成
 将沉浸式翻译的 Azure 终端地址指向你的代理服务地址（例如 `https://your-service.onrender.com`），其余参数保持与 Azure Translator 一致。
-若配置了 `PROXY_TOKEN`，需在扩展的自定义请求头中添加 `x-proxy-token: <你的令牌>`。
+若配置了 `PROXY_TOKEN`，在扩展中可选择：
+- 添加 `x-proxy-token: <你的令牌>`；或
+- 将 `Ocp-Apim-Subscription-Key` 填为 `<你的令牌>`（代理仅用于鉴权，不会把它转发到上游，上游仍使用代理内部轮换密钥）。
 
 ## 注意
 - 仅做密钥轮训和简单转发，不改变请求/响应语义。

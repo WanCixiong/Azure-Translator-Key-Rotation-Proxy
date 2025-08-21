@@ -59,7 +59,13 @@ function buildAzureUrl(path, query) {
 // Optional access control: require a shared token via header or query when PROXY_TOKEN is set
 function authGuard(req, res, next) {
   if (!PROXY_TOKEN) return next();
-  const headerToken = req.get('x-proxy-token') || (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
+  const headerToken =
+    // Prefer our custom header
+    req.get('x-proxy-token') ||
+    // Allow clients that can only set Azure header name to carry the access token
+    req.get('Ocp-Apim-Subscription-Key') ||
+    // Or Bearer token
+    (req.headers.authorization || '').replace(/^Bearer\s+/i, '').trim();
   const queryToken = req.query && (req.query.token || req.query.access_key || req.query.accessKey);
   const token = headerToken || queryToken;
   if (token === PROXY_TOKEN) return next();
