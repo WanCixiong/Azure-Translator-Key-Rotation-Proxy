@@ -59,6 +59,24 @@ Invoke-RestMethod -Method Post -Uri $uri -Headers $Headers -ContentType 'applica
 
 可选使用 `render.yaml` 进行一键部署。
 
+## 从 GHCR 拉取镜像
+当你将仓库推送到 GitHub 后，Actions 会自动把镜像发布到 GitHub Container Registry：
+
+拉取 latest：
+```bash
+docker pull ghcr.io/wancixiong/azure-translator-key-rotation-proxy:latest
+```
+
+运行：
+```bash
+docker run -d --name translate-proxy --restart unless-stopped -p 3000:3000 \
+	-e AZURE_ENDPOINT=https://api.cognitive.microsofttranslator.com \
+	-e AZURE_REGION=eastasia \
+	-e AZURE_KEYS="key1,key2" \
+	-e PROXY_TOKEN="your-secret" \
+	ghcr.io/wancixiong/azure-translator-key-rotation-proxy:latest
+```
+
 ## render.yaml（可选）
 见仓库根目录的 `render.yaml`。
 
