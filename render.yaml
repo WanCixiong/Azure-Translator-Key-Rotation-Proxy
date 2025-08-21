@@ -1,0 +1,17 @@
+services:
+  - type: web
+    name: azure-translate-key-rotator-proxy
+    env: node
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: AZURE_KEYS
+        sync: false
+      - key: AZURE_REGION
+        sync: false
+      - key: AZURE_ENDPOINT
+        value: https://api.cognitive.microsofttranslator.com
+      - key: PROXY_TOKEN
+        sync: false
